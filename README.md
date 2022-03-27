@@ -9,17 +9,17 @@ application up and running.
 
 * Rails version: '6.1.3', '>= 6.1.3.2'
 
-* Gem utilizadas:
+* Gems:
 
 		simple_form '5.1.0'
 		paper_trail '12.3'
 
 * Configuration:
 
-		Use <code> yarn install </code> for dependencies install .
+		Use yarn install for dependencies install .
 
-		Create database with <code> rake db:create </code> and <code> rake db:migrate </code> .
+		Create database with rake db:create and rake db:migrate .
 
-		Start server with <code> rails s </code>.
+		Start server with rails s .
 
 
