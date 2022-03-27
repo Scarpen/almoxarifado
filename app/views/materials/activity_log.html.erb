@@ -1,0 +1,35 @@
+<div class="content-wrapper">
+	<div class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1 class="m-0 text-dark">Log de Entrada/Saida de Materiais</h1>
+				</div><!-- /.col -->
+			</div>
+		</div>
+	</div>
+
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<!-- /.card-header -->
+						<div class="card-body">
+							<p><%= link_to "Voltar", materials_path, class: "btn btn-default" %></p>
+
+							<div data-offset="0" style="border-style: inset; overflow-y: auto; height:75vh;">
+								<% @materials_log.split("\n").each do |line| %>
+									<%= line %> <br>
+								<% end %>
+							</div>
+
+						</div>
+						<!-- /.card-body -->
+					</div>
+					<!-- /.card -->
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Admin</title>
+   <%= csrf_meta_tags %>
+   <%= csp_meta_tag %>
+
+   <%= stylesheet_link_tag 'admin', media: 'all', 'data-turbolinks-track': 'reload' %>
+   <%= javascript_pack_tag 'admin', 'data-turbolinks-track': 'reload' %>
+   
+   <script src="https://kit.fontawesome.com/6d90f39943.js"></script>
+ </head>
+
+ <body class="hold-transition sidebar-mini layout-fixed">
+   <div class="wrapper">
+     <%= render "layouts/admin_nav" %>
+     <%= render "layouts/admin_side_nav" %>
+     <%= yield %>
+     <%= render "layouts/admin_footer" %>
+   </div>
+ </body>
+</html>
+
+<script>
+  $(document).ready(function () {
+    notice = document.getElementById("notice");
+    <% if notice %>
+      notice.style.display = "block";
+    <% end %>
+  });
+</script>

@@ -1,0 +1,48 @@
+
+<div class="login-box">
+  <!-- /.login-logo -->
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <a href="../../index2.html" class="h1"><b>Almoxarifado</a>
+    </div>
+    <div class="card-body">
+
+      <p class="login-box-msg">Iniciar a Sessão</p>
+      <% if flash[:notice] %>
+      <div class="alert alert-warning" role="alert">
+        <%= flash[:notice] %>
+      </div>
+      <% end %>
+      <%= simple_form_for :user, url: '/login' do |f| %>
+      <%= f.input :username, label: "Usuário" do %>
+      <div class="input-group mb-3">
+        <%= f.input_field :username, class: "form-control" %>
+        <div class="input-group-append">
+          <div class="input-group-text">
+            <span class="fas fa-user"></span>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
+      <%= f.input :password, label: "Senha"  do %>
+      <div class="input-group mb-3">
+        <%= f.input_field :password, class: "form-control"%>
+        <div class="input-group-append">
+          <div class="input-group-text">
+            <span class="fas fa-lock"></span>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
+      <%= f.button :submit, "Entrar" , class: "btn btn-primary btn-block"  %>       
+      <% end %>
+
+      <%= link_to "Cadastrar novo usuário", signup_path %>  
+
+    </div>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+  </div>

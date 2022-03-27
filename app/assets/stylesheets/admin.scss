@@ -1,0 +1,13 @@
+// Place all the styles related to the User controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&lang=en");
+
+@import "bootstrap/scss/bootstrap";
+@import "admin-lte/dist/css/adminlte";
+
+.dataTables_wrapper .dataTables_filter {
+    float: right !important;
+    text-align: right;
+}

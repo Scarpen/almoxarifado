@@ -1,0 +1,136 @@
+<div class="content-wrapper">
+	<div class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1 class="m-0 text-dark">Mostrando Material</h1>
+				</div><!-- /.col -->
+			</div>
+		</div>
+	</div>
+
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<!-- /.card-header -->
+						<div class="card-body">
+							<span id="notice" style="display:none;" class="alert alert-primary"><%= notice %></span>
+							<%= link_to "Voltar", materials_path, class: "btn btn-default" %>
+							<br> <br>
+							<h4 > Nome: <span id="name"> <%= @material.name %> </span></h4>
+							<h4> ID: <%= @material.id %> </h4>
+							<h4> Quantidade em Estoque: <span id="qnt"><%= @material.quantity %> </span></h4>
+							<br> <br>
+								<div id="operationBtn" class="form-inline">
+									<button type="button" id="btnInput" class="btn btn-success" style="display:inline;" onclick="inputForm(1)">Entrada</button>
+									<button type="button"  id="btnOut" class="btn btn-default" style="display:inline;" onclick="inputForm(2)">Retirada</button> 
+									<button type="button"  id="btnOut" class="btn btn-default" style="display:inline;" onclick="nameForm()">Editar</button> 
+								</div>
+								<div style="display:none" id="qnt_form" class="form-inline">
+									<input type="text" id="qnt_field" class="form-control" name="quantity" placeholder="Quantidade" style="display: inline;width: 125px" />
+									<button id="inputBtn" class="btn btn-primary" style="display:none" onclick="updateQuantity(1)">Entrada</button>
+									<button id="outputBtn" class="btn btn-primary" style="display:none" onclick="updateQuantity(2)">Retirada</button>
+									<button class="btn btn-default" onclick="hideForm()">	Voltar </button>
+								</div>
+								<div style="display:none" id="name_form" class="form-inline">
+									<input type="text" id="name_field" class="form-control" name="name" placeholder="Nome" style="display: inline;width: 200px" value='<%= @material.name %>' />
+									<button class="btn btn-primary" onclick="updateName()">Salvar</button>
+									<button class="btn btn-default" onclick="hideForm()">	Voltar </button>
+								</div>
+								<span id="btnDel">
+								<% if can_destroy?(@material)	%>
+									<%= link_to "Deletar", @material, method: :delete, class: "btn btn-danger", data: {confirm: "Tem certeza que deseja deletar o material: #{@material.name}"} %>
+								<% end %>
+								</span>
+							<br> <br> <br>
+							<h4> Log do Material </h4>
+
+							<div data-offset="0" style="border-style: inset; overflow-y: auto; height:50vh;">
+								<% @material_log.split("\n").each do |line| %>
+									<%= line %> <br>
+								<% end %>
+							</div>
+
+						</div>
+						<!-- /.card-body -->
+					</div>
+					<!-- /.card -->
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script>
+
+	function inputForm(operation){
+		document.getElementById("operationBtn").style.display = "none";
+		document.getElementById("qnt_form").style.display = "inline";
+		if (operation == 1) {
+			document.getElementById("inputBtn").style.display = "inline";
+		} else {
+			document.getElementById("outputBtn").style.display = "inline";
+		};
+		document.getElementById("qnt_field").value = "";
+		document.getElementById("qnt_field").focus();
+	};
+
+	function nameForm(){
+		document.getElementById("operationBtn").style.display = "none";
+		document.getElementById("name_form").style.display = "inline";
+		document.getElementById("name_field").focus();
+	};
+
+	function hideForm(){
+		document.getElementById("operationBtn").style.display = "inline";
+		document.getElementById("qnt_form").style.display = "none";
+		document.getElementById("name_form").style.display = "none";
+		document.getElementById("inputBtn").style.display = "none";
+		document.getElementById("outputBtn").style.display = "none";
+	};
+
+	function updateQuantity(op){
+		var qnt = document.getElementById("qnt_field").value;
+		$.ajax({
+			type:"POST",
+			url:"<%= updateQuantity_materials_path %>",
+			dataType:"json",
+			data: {material: <%=@material.id%>, operation: op, quantity: qnt},
+			success:function(result){
+				notice.style.display = "block";
+				notice.innerHTML = result.notice;
+				if (result.status == "failed"){
+					notice.className = "alert alert-danger";
+				} else {
+					hideForm();
+					document.getElementById("qnt").innerHTML = result.quantity;
+					document.getElementById("btnDel").style.display = "none";		
+					notice.className = "alert alert-success";
+				};
+			},
+		})
+	};
+
+	function updateName(){
+		var name = document.getElementById("name_field").value;
+		$.ajax({
+			type:"POST",
+			url:"<%= updateName_materials_path %>",
+			dataType:"json",
+			data: {material: <%=@material.id%>, name: name},
+			success:function(result){
+				notice.style.display = "block";
+				notice.innerHTML = result.notice;
+				if (result.status == "failed"){
+					notice.className = "alert alert-danger";
+				} else {
+					hideForm();
+					document.getElementById("name").innerHTML = result.name;
+					notice.className = "alert alert-success";
+				};
+			},
+		})
+	};
+</script>

@@ -1,0 +1,170 @@
+<div class="content-wrapper">
+	<div class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1 class="m-0 text-dark">Materiais</h1>
+				</div><!-- /.col -->
+			</div>
+		</div>
+	</div>
+
+	
+
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<!-- /.card-header -->
+						<div class="card-body">
+							<span id="notice" style="display:none;" class="alert alert-primary"><%= notice %></span>
+							<div class="row">
+								<div class="col-sm-6"> 
+									<div id="newMaterial" style="display:none" >
+										<%= simple_form_for @material, html: {class: "form-inline" } do |f| %>
+											<%= f.input :name, input_html: { class: 'form-control' }, placeholder: "Nome", label: false %>  
+											<%= f.submit "Salvar", class: "btn btn-primary" %>
+										<% end %>
+									</div>
+									<button id="btnMaterial" class="btn btn-primary" onclick="newMaterial()">	Novo Material	</button>
+								</div>
+								<div class="col-sm-6" style="text-align: right;"> 
+									<%= link_to "Log de Entrada/Saida", activity_log_materials_path, class: "btn btn-default" %>
+								</div>
+							</div>
+							<table id="material_table" class="table table-bordered table-hover">
+								<thead>
+									<tr>
+										<th>Nome</th>
+										<th>Quantidade</th>
+										<th>Ações</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% @materials.each do |m| %>
+									<tr>
+										<td id="name<%=m.id%>"> <%= m.name %> </td>
+										<td id="qnt<%=m.id%>"> <%= m.quantity %> </td>
+										<td> 
+											<div id="operationBtn<%=m.id%>" class="form-inline">
+												<button type="button" id="btnInput<%=m.id%>" class="btn btn-success" style="display:inline;" onclick="inputForm(<%= m.id%>,1)">Entrada</button>
+												<button type="button"  id="btnOut<%=m.id%>" class="btn btn-default" style="display:inline;" onclick="inputForm(<%= m.id%>,2)">Retirada</button> 
+												<%= link_to 'Log', m, class: "btn btn-default" %>
+												<button type="button"  id="btnOut<%=m.id%>" class="btn btn-default" style="display:inline;" onclick="nameForm(<%= m.id %>)">Editar</button> 
+												<span id = "btnDel<%=m.id%>" >
+													<% if can_destroy?(m)	%>
+														<%= link_to "Deletar", m, method: :delete, class: "btn btn-danger", data: {confirm: "Are you sure?"} %>
+													<% end %>
+												</span>
+											</div>
+											<div style="display:none" id="qnt_form<%=m.id%>" class="form-inline">
+												<input type="text" id="qnt_field<%=m.id%>" class="form-control" name="quantity" placeholder="Quantidade" style="display: inline;width: 125px" />
+												<button id="inputBtn<%=m.id%>" class="btn btn-primary" style="display:none" onclick="updateQuantity(<%= m.id%>,1)">Entrada</button>
+												<button id="outputBtn<%=m.id%>" class="btn btn-primary" style="display:none" onclick="updateQuantity(<%= m.id%>,2)">Retirada</button>
+												<button class="btn btn-default" onclick="hideForm(<%= m.id%>)">	Voltar </button>
+											</div>
+											<div style="display:none" id="name_form<%=m.id%>" class="form-inline">
+												<input type="text" id="name_field<%=m.id%>" class="form-control" name="name" placeholder="Nome" style="display: inline;width: 200px" value='<%= m.name %>' />
+												<button class="btn btn-primary" onclick="updateName(<%= m.id%>)">Salvar</button>
+												<button class="btn btn-default" onclick="hideForm(<%= m.id%>)">	Voltar </button>
+											</div>
+										</td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+						<!-- /.card-body -->
+					</div>
+					<!-- /.card -->
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script>
+	
+	$(document).ready(function () {
+		$("#material_table").DataTable({
+			"responsive": true, "lengthChange": false, "autoWidth": true, language: {
+				url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json',
+			}
+		});
+	});
+
+	function newMaterial(){
+		document.getElementById("newMaterial").style.display = "block";
+		document.getElementById("btnMaterial").style.display = "none";
+	};
+
+	function inputForm(material_id, operation){
+		document.getElementById("operationBtn"+material_id).style.display = "none";
+		document.getElementById("qnt_form"+material_id).style.display = "inline";
+		if (operation == 1) {
+			document.getElementById("inputBtn"+material_id).style.display = "inline";
+		} else {
+			document.getElementById("outputBtn"+material_id).style.display = "inline";
+		};
+		document.getElementById("qnt_field"+material_id).value = "";
+		document.getElementById("qnt_field"+material_id).focus();
+	};
+
+	function nameForm(material_id){
+		document.getElementById("operationBtn"+material_id).style.display = "none";
+		document.getElementById("name_form"+material_id).style.display = "inline";
+		document.getElementById("name_field"+material_id).focus();
+	};
+
+	function hideForm(material_id){
+		document.getElementById("operationBtn"+material_id).style.display = "inline";
+		document.getElementById("qnt_form"+material_id).style.display = "none";
+		document.getElementById("name_form"+material_id).style.display = "none";
+		document.getElementById("inputBtn"+material_id).style.display = "none";
+		document.getElementById("outputBtn"+material_id).style.display = "none";
+	};
+
+	function updateQuantity(material_id, op){
+		var qnt = document.getElementById("qnt_field"+material_id).value;
+		$.ajax({
+			type:"POST",
+			url:"<%= updateQuantity_materials_path %>",
+			dataType:"json",
+			data: {material: material_id, operation: op, quantity: qnt},
+			success:function(result){
+				notice.style.display = "block";
+				notice.innerHTML = result.notice;
+				if (result.status == "failed"){
+					notice.className = "alert alert-danger";
+				} else {
+					hideForm(material_id);
+					document.getElementById("qnt"+material_id).innerHTML = result.quantity;
+					document.getElementById("btnDel"+material_id).style.display = "none";		
+					notice.className = "alert alert-success";
+				};
+			},
+		})
+	};
+
+	function updateName(material_id){
+		var name = document.getElementById("name_field"+material_id).value;
+		$.ajax({
+			type:"POST",
+			url:"<%= updateName_materials_path %>",
+			dataType:"json",
+			data: {material: material_id, name: name},
+			success:function(result){
+				notice.style.display = "block";
+				notice.innerHTML = result.notice;
+				if (result.status == "failed"){
+					notice.className = "alert alert-danger";
+				} else {
+					hideForm(material_id);
+					document.getElementById("name"+material_id).innerHTML = result.name;
+					notice.className = "alert alert-success";
+				};
+			},
+		})
+	};
+</script>
